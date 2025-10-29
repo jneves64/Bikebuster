@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BikeBuster", "BikeBuster\BikeBuster.csproj", "{6DA09A8E-AA17-4CCC-8663-7138E426CD9B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6DA09A8E-AA17-4CCC-8663-7138E426CD9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DA09A8E-AA17-4CCC-8663-7138E426CD9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DA09A8E-AA17-4CCC-8663-7138E426CD9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DA09A8E-AA17-4CCC-8663-7138E426CD9B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7CC56775-7F83-45BB-BA1C-AC24F833829F}
+	EndGlobalSection
+EndGlobal
