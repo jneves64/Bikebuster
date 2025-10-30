@@ -1,15 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace BikeBuster.Models
-
 {
     public class BikeModel
     {
         [Key]
-        public string Identificador { get; set; }
-        public int Ano { get; set; }
-        public string Modelo { get; set; }
-        public string Placa { get; set; }
-    }
+        [JsonPropertyName("identificador")]
+        public string Id { get; set; }
 
+        [JsonPropertyName("ano")]
+        public int Year { get; set; }
+
+        [JsonPropertyName("modelo")]
+        public string Model { get; set; }
+
+        [JsonPropertyName("placa")]
+        public required string Plate { get; set; }
+    }
 }
