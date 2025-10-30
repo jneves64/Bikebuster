@@ -10,7 +10,7 @@ namespace BikeBuster.Controllers
     {
         // POST /entregadores
         [HttpPost]
-        public IActionResult RegisterRider([FromBody] RiderModel rider)
+        public IActionResult RegisterRider([FromBody] UserModel rider)
         {
             // lógica de cadastro
             return Created("", rider); // 201 Created
@@ -18,7 +18,7 @@ namespace BikeBuster.Controllers
 
         // PUT /entregadores/{id}/cnh
         [HttpPost("{id}/cnh")]
-        public IActionResult UpdateLicense(string id, [FromBody] RiderModel rider)
+        public IActionResult UpdateLicense(string id, [FromBody] UserModel rider)
         {
             // lógica de atualização da imagem CNH
             return NoContent(); // 204 No Content

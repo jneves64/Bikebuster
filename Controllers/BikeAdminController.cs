@@ -19,14 +19,14 @@ namespace BikeBuster.Controllers
         [HttpGet]
         public IActionResult GetAll([FromQuery] string? placa)
         {
-            return Ok(new[] { new BikeModel { Identificador = "moto123", Ano = 2020, Modelo = "Mottu Sport", Placa = "CDX-0101" } });
+            return Ok(new[] { new BikeModel { Id = "moto123", Year = 2020, Model = "Mottu Sport", Plate = "CDX-0101" } });
         }
 
         // GET /motos/{id}
         [HttpGet("{id}")]
         public IActionResult GetById(string id)
         {
-            return Ok(new BikeModel { Identificador = id, Ano = 2020, Modelo = "Mottu Sport", Placa = "CDX-0101" });
+            return Ok(new BikeModel { Id = id, Year = 2020, Model = "Mottu Sport", Plate = "CDX-0101" });
         }
 
         // PUT /motos/{id}/placa
