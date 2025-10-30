@@ -1,7 +1,10 @@
-﻿namespace BikeBuster.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BikeBuster.Models
 {
     public class RiderModel
     {
+        [Key]
         public string Identificador { get; set; }
         public string Nome { get; set; }
         public string Cnpj { get; set; }

@@ -1,7 +1,10 @@
-﻿namespace BikeBuster.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BikeBuster.Models
 {
     public class RentalModel
     {
+        [Key]
         public string Identificador { get; set; }
         public decimal Valor_Diaria { get; set; }
         public string Entregador_Id { get; set; }
