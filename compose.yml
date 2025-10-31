@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:17
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: bikebuster_db
+    ports:
+      - "5432:5432"
+    # volumes:
+    #   - ./database:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_container
+    ports:
+      - "5672:5672"
+      - "15672:15672"
