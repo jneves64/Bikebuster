@@ -8,7 +8,7 @@ namespace BikeBuster.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<BikeModel> Bike { get; set; }
-        public DbSet<UserModel> Rider { get; set; }
+        public DbSet<UserModel> User { get; set; }
         public DbSet<RentalModel> Rent { get; set; }
     }
 }
