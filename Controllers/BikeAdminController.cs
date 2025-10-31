@@ -1,19 +1,34 @@
-﻿using BikeBuster.Models;
-
+﻿using System.Diagnostics;
+using BikeBuster.Models;
+using BikeBuster.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BikeBuster.Controllers
 {
     [ApiController]
     [Route("motos")]
-    public class MotosController : ControllerBase
+    public class BikeAdminController : ControllerBase
     {
-        // POST /motos
-        [HttpPost]
-        public IActionResult Create([FromBody] BikeModel moto)
+       
+        private readonly BikeService _bikeService;
+
+        public BikeAdminController(BikeService bikeService)
         {
-            return Created("", moto); // 201 Created
+            _bikeService = bikeService;
         }
+       
+        // POST /motos
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] BikeModel moto)
+        {
+            Console.WriteLine("Hello World");
+
+            var result = await _bikeService.Create(moto);
+
+            return Created($"/motos/{result.Id}", result); // 201 Created
+        }
+
 
         // GET /motos
         [HttpGet]

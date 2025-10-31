@@ -1,5 +1,7 @@
 using BikeBuster.Data;
+using BikeBuster.Messaging.Events;
 using BikeBuster.Models;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace BikeBuster.Services
@@ -7,6 +9,13 @@ namespace BikeBuster.Services
     public class BikeService
     {
         private readonly AppDbContext _context;
+        private readonly IPublishEndpoint _publish;
+
+        public BikeService(AppDbContext context, IPublishEndpoint publish)
+        {
+            _context = context;
+            _publish = publish;
+        }
         public BikeService(AppDbContext context) => _context = context;
 
         public IEnumerable<BikeModel> GetAll(string? plate)
@@ -19,10 +28,19 @@ namespace BikeBuster.Services
 
         public BikeModel? GetById(string id) => _context.Bike.Find(id);
 
-        public BikeModel Create(BikeModel moto)
+        public async Task<BikeModel> Create(BikeModel moto)
         {
             _context.Bike.Add(moto);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            // fire event
+            await _publish.Publish(new BikeCreatedEvent(
+                moto.Id,
+                moto.Year,
+                moto.Model,
+                moto.Plate
+            ));
+
             return moto;
         }
 
