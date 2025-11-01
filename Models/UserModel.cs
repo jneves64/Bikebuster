@@ -10,7 +10,7 @@ namespace BikeBuster.Models
         B,
         AB
     }
-    
+
     [Index(nameof(Cnpj), IsUnique = true)]
     [Index(nameof(DriverLicenseNumber), IsUnique = true)]
     public class UserModel
@@ -25,11 +25,14 @@ namespace BikeBuster.Models
         public string Name { get; set; }
 
         [JsonPropertyName("data_nascimento")]
+        [Required]
         public DateTime BirthDate { get; set; }
 
+        [Required]
         [JsonPropertyName("tipo_cnh")]
         public DriverLicenseType DriverLicenseType { get; set; }
 
+        [Required]
         [JsonPropertyName("imagem_cnh")]
         public string DriverLicenseImage { get; set; }
 
