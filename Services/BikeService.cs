@@ -3,6 +3,7 @@ using BikeBuster.Messaging.Events;
 using BikeBuster.Models;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace BikeBuster.Services
 {
@@ -25,21 +26,28 @@ namespace BikeBuster.Services
         public async Task<BikeModel> Create(BikeModel moto)
         {
             var entry = await _db.Bike.AddAsync(moto);
-            await _db.SaveChangesAsync();
-
-            var saved = entry.Entity; // contém o objeto final com ID do banco
-
-            if (_messageBroker != null)
+            try
             {
-                await _messageBroker.Publish(new BikeCreatedEvent(
-                    saved.Id,
-                    saved.Year,
-                    saved.Model,
-                    saved.Plate
-                ));
-            }
+                await _db.SaveChangesAsync();
+                var saved = entry.Entity; // contém o objeto final com ID do banco
+                if (_messageBroker != null){
+                    await _messageBroker.Publish(new BikeCreatedEvent(
+                        saved.Id,
+                        saved.Year,
+                        saved.Model,
+                        saved.Plate
+                    ));
+                }
+                return saved;
 
-            return saved;
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException is PostgresException pgEx && pgEx.SqlState == "23505"){
+                    throw new InvalidOperationException($"Já existe uma entrada com {pgEx.ConstraintName} ");
+                }
+                throw;
+            }
         }
 
 

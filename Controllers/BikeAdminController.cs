@@ -9,24 +9,37 @@ namespace BikeBuster.Controllers
     [Route("motos")]
     public class BikeAdminController : ControllerBase
     {
-       
+
         private readonly BikeService _bikeService;
 
         public BikeAdminController(BikeService bikeService)
         {
             _bikeService = bikeService;
         }
-       
+
         // POST /motos
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] BikeModel moto)
         {
-            Console.WriteLine("Hello World");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var result = await _bikeService.Create(moto);
+            try
+            {
+                var result = await _bikeService.Create(moto);
+                return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+            }
 
-            return Created($"/motos/{result.Id}", result); // 201 Created
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Erro = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Erro = ex.Message });
+            }
+
         }
 
 
