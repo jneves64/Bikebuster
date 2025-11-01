@@ -26,28 +26,22 @@ namespace BikeBuster.Services
         public async Task<BikeModel> Create(BikeModel moto)
         {
             var entry = await _db.Bike.AddAsync(moto);
-            try
-            {
-                await _db.SaveChangesAsync();
-                var saved = entry.Entity; // contém o objeto final com ID do banco
-                if (_messageBroker != null){
-                    await _messageBroker.Publish(new BikeCreatedEvent(
-                        saved.Id,
-                        saved.Year,
-                        saved.Model,
-                        saved.Plate
-                    ));
-                }
-                return saved;
 
-            }
-            catch (DbUpdateException ex)
+            await _db.SaveChangesAsync();
+            var saved = entry.Entity; 
+            if (_messageBroker != null)
             {
-                if (ex.InnerException is PostgresException pgEx && pgEx.SqlState == "23505"){
-                    throw new InvalidOperationException($"Já existe uma entrada com {pgEx.ConstraintName} ");
-                }
-                throw;
+                await _messageBroker.Publish(new BikeCreatedEvent(
+                    saved.Id,
+                    saved.Year,
+                    saved.Model,
+                    saved.Plate
+                ));
             }
+            return saved;
+
+
+
         }
 
 
