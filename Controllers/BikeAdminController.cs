@@ -28,7 +28,7 @@ namespace BikeBuster.Controllers
             try
             {
                 var result = await _bikeService.Create(bike);
-                return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+                return Created("", result);
             }
 
             catch (InvalidOperationException ex)
