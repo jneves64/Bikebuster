@@ -6,59 +6,51 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BikeBuster.Services
 {
-    public class BikeService
+    public class BikeService(DatabaseContext context, IPublishEndpoint publish) : BaseService(context, publish)
     {
-        private readonly AppDbContext _context;
-        private readonly IPublishEndpoint _publish;
-
-        public BikeService(AppDbContext context, IPublishEndpoint publish)
-        {
-            _context = context;
-            _publish = publish;
-        }
-        public BikeService(AppDbContext context) => _context = context;
-
         public IEnumerable<BikeModel> GetAll(string? plate)
         {
-            var query = _context.Bike.AsQueryable();
+            var query = this._db.Bike.AsQueryable();
             if (!string.IsNullOrEmpty(plate))
                 query = query.Where(m => m.Plate == plate);
             return query.ToList();
         }
 
-        public BikeModel? GetById(string id) => _context.Bike.Find(id);
+        public BikeModel? GetById(string id)
+        {
+            return _db.Bike.Find(id);
+        }
+
 
         public async Task<BikeModel> Create(BikeModel moto)
         {
-            _context.Bike.Add(moto);
-            await _context.SaveChangesAsync();
 
-            // fire event
-            await _publish.Publish(new BikeCreatedEvent(
-                moto.Id,
-                moto.Year,
-                moto.Model,
-                moto.Plate
-            ));
+            if (this._messageBroker != null)
+                await this._messageBroker.Publish(new BikeCreatedEvent(
+                    moto.Id,
+                    moto.Year,
+                    moto.Model,
+                    moto.Plate
+                ));
 
             return moto;
         }
 
         public bool UpdatePlate(string id, string newPlate)
         {
-            var moto = _context.Bike.Find(id);
+            var moto = this._db.Bike.Find(id);
             if (moto == null) return false;
             moto.Plate = newPlate;
-            _context.SaveChanges();
+            this._db.SaveChanges();
             return true;
         }
 
         public bool Delete(string id)
         {
-            var moto = _context.Bike.Find(id);
-            if (moto == null) return false;
-            _context.Bike.Remove(moto);
-            _context.SaveChanges();
+            var bike = this._db.Bike.Find(id);
+            if (bike == null) return false;
+            this._db.Bike.Remove(bike);
+            this._db.SaveChanges();
             return true;
         }
     }
