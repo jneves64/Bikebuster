@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BikeBuster.Models
@@ -21,6 +20,8 @@ namespace BikeBuster.Models
         public string Id { get; set; }
 
         [JsonPropertyName("nome")]
+        [Required]
+        [StringLength(200)]
         public string Name { get; set; }
 
         [JsonPropertyName("data_nascimento")]
@@ -35,11 +36,11 @@ namespace BikeBuster.Models
         [JsonPropertyName("numero_cnh")]
         [Required]
         [StringLength(11, MinimumLength = 11)]
-        public uint DriverLicenseNumber { get; set; }
+        public string DriverLicenseNumber { get; set; }
 
         [JsonPropertyName("cnpj")]
         [Required]
         [StringLength(14, MinimumLength = 14)]
-        public uint Cnpj { get; set; }
+        public string Cnpj { get; set; }
     }
 }

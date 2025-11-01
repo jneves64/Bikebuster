@@ -13,13 +13,14 @@ namespace BikeBuster.Models
         public string Id { get; set; }
 
         [JsonPropertyName("ano")]
-        [StringLength(4, MinimumLength = 4)]
+        [Range(1900, 2100)]
         public int Year { get; set; }
 
         [JsonPropertyName("modelo")]
         public string Model { get; set; }
 
         [JsonPropertyName("placa")]
+        [StringLength(7, MinimumLength = 7)]
         public required string Plate { get; set; }
     }
 }
