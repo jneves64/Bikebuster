@@ -7,9 +7,9 @@ namespace BikeBuster.Messaging.Consumers
 {
     public class BikeCreatedConsumer : IConsumer<BikeCreatedEvent>
     {
-        private readonly AppDbContext _db;
+        private readonly DatabaseContext _db;
 
-        public BikeCreatedConsumer(AppDbContext db) => _db = db;
+        public BikeCreatedConsumer(DatabaseContext db) => _db = db;
 
         public async Task Consume(ConsumeContext<BikeCreatedEvent> context)
         {

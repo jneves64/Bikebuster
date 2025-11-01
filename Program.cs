@@ -1,5 +1,6 @@
 using BikeBuster.Data;
 using BikeBuster.Messaging.Consumers;
+using BikeBuster.Models;
 using BikeBuster.Services;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
@@ -25,7 +26,8 @@ builder.Services.AddMassTransit(x =>
 });
 
 builder.Services.AddScoped<BikeService>();
-
+builder.Services.AddScoped<RentalService>();
+builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 

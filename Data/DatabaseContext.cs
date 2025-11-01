@@ -3,9 +3,9 @@ using BikeBuster.Models;
 
 namespace BikeBuster.Data
 {
-    public class AppDbContext : DbContext
+    public class DatabaseContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
 
         public DbSet<BikeModel> Bike { get; set; }
         public DbSet<UserModel> User { get; set; }
