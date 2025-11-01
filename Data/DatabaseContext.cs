@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using BikeBuster.Models;
+using Npgsql;
+using System.Security.Cryptography.Xml;
 
 namespace BikeBuster.Data
 {
@@ -25,6 +27,29 @@ namespace BikeBuster.Data
             // Aqui você pode adicionar outras configurações
             // Exemplo: índices, chaves compostas, relacionamentos, etc.
         }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await base.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException is PostgresException pgEx && pgEx.SqlState == "23505")
+                {
+                    var keyName = pgEx.ConstraintName ?? "UNKNOWN";
+
+                    keyName = keyName
+                        .Replace("IX_", "", StringComparison.OrdinalIgnoreCase)
+                        .Replace("PK_", "ID ", StringComparison.OrdinalIgnoreCase);
+                    throw new InvalidOperationException($"A {keyName.ToUpper()} entry with this value already exists");
+
+                }
+                throw;
+            }
+        }
     }
 }
+
 
