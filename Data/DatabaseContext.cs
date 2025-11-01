@@ -10,6 +10,8 @@ namespace BikeBuster.Data
         public DbSet<BikeModel> Bike { get; set; }
         public DbSet<UserModel> User { get; set; }
         public DbSet<RentalModel> Rent { get; set; }
+        public DbSet<NotificationModel> Notification { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -15,14 +15,11 @@ namespace BikeBuster.Messaging.Consumers
         {
             var msg = context.Message;
             Console.WriteLine("consumindo do rabbit");
-            if (msg.Ano == 2025)
+            if (msg.Ano == 2024)
             {
-                await _db.Bike.AddAsync(new BikeModel
+                await _db.Notification.AddAsync(new NotificationModel
                 {
-                    Id = msg.Identificador,
-                    Year = msg.Ano,
-                    Model = msg.Modelo,
-                    Plate = msg.Placa
+                    BikeId = msg.Identificador
                 });
                 await _db.SaveChangesAsync();
             }
