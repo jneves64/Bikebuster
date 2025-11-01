@@ -24,17 +24,24 @@ namespace BikeBuster.Services
 
         public async Task<BikeModel> Create(BikeModel moto)
         {
+            var entry = await _db.Bike.AddAsync(moto);
+            await _db.SaveChangesAsync();
 
-            if (this._messageBroker != null)
-                await this._messageBroker.Publish(new BikeCreatedEvent(
-                    moto.Id,
-                    moto.Year,
-                    moto.Model,
-                    moto.Plate
+            var saved = entry.Entity; // contém o objeto final com ID do banco
+
+            if (_messageBroker != null)
+            {
+                await _messageBroker.Publish(new BikeCreatedEvent(
+                    saved.Id,
+                    saved.Year,
+                    saved.Model,
+                    saved.Plate
                 ));
+            }
 
-            return moto;
+            return saved;
         }
+
 
         public bool UpdatePlate(string id, string newPlate)
         {
