@@ -20,14 +20,15 @@ namespace BikeBuster.Controllers
         // POST /motos
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] BikeModel moto)
+        public async Task<IActionResult> Create([FromBody] BikeModel bike)
         {
+            //check if
+            
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
             try
             {
-                var result = await _bikeService.Create(moto);
+                var result = await _bikeService.Create(bike);
                 return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
             }
 
