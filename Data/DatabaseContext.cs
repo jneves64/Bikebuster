@@ -10,6 +10,19 @@ namespace BikeBuster.Data
         public DbSet<BikeModel> Bike { get; set; }
         public DbSet<UserModel> User { get; set; }
         public DbSet<RentalModel> Rent { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder); // ✅ Importante chamar o base
+
+            // Configuração do enum como string
+            modelBuilder.Entity<UserModel>()
+                .Property(u => u.DriverLicenseType)
+                .HasConversion<string>();
+
+            // Aqui você pode adicionar outras configurações
+            // Exemplo: índices, chaves compostas, relacionamentos, etc.
+        }
     }
 }
 
