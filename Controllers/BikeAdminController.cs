@@ -22,8 +22,7 @@ namespace BikeBuster.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] BikeModel bike)
         {
-            //check if
-            
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             try
@@ -44,32 +43,56 @@ namespace BikeBuster.Controllers
         }
 
 
-        // GET /motos
         [HttpGet]
-        public IActionResult GetAll([FromQuery] string? placa)
+        public async Task<IActionResult> GetAll([FromQuery] string? placa, CancellationToken cancellationToken = default)
         {
-            return Ok(new[] { new BikeModel { Id = "moto123", Year = 2020, Model = "Mottu Sport", Plate = "CDX-0101" } });
+            var bikes = await _bikeService.GetAllAsync(placa, cancellationToken);
+            return Ok(bikes);
         }
 
-        // GET /motos/{id}
         [HttpGet("{id}")]
-        public IActionResult GetById(string id)
+        public async Task<IActionResult> GetById(string id, CancellationToken cancellationToken = default)
         {
-            return Ok(new BikeModel { Id = id, Year = 2020, Model = "Mottu Sport", Plate = "CDX-0101" });
+            var bike = await _bikeService.GetByIdAsync(id, cancellationToken);
+            if (bike == null)
+                return NotFound(); // 404 - esse ID específico não existe
+
+            return Ok(bike); // 200 - encontrou a moto
         }
+
 
         // PUT /motos/{id}/placa
         [HttpPut("{id}/placa")]
-        public IActionResult UpdatePlate(string id, [FromBody] string novaPlaca)
+        public async Task<IActionResult> UpdatePlate(string id, [FromBody] string novaPlaca)
         {
-            return NoContent(); // 204
+            if (string.IsNullOrWhiteSpace(novaPlaca))
+                return BadRequest("Placa inválida.");
+
+            try
+            {
+                var ok = await _bikeService.UpdatePlateAsync(id, novaPlaca);
+                if (!ok) return NotFound("Moto não encontrada.");
+                return NoContent(); // 204
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Erro = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Erro = ex.Message });
+            }
         }
 
         // DELETE /motos/{id}
         [HttpDelete("{id}")]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            return NoContent();
+            var ok = await _bikeService.DeleteAsync(id);
+            if (!ok) return NotFound("Moto não encontrada.");
+            return Ok();
+
+
         }
     }
 }

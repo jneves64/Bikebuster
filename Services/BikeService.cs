@@ -9,17 +9,18 @@ namespace BikeBuster.Services
 {
     public class BikeService(DatabaseContext context, IPublishEndpoint publish) : BaseService(context, publish)
     {
-        public IEnumerable<BikeModel> GetAll(string? plate)
+        public async Task<IEnumerable<BikeModel>> GetAllAsync(string? plate, CancellationToken cancellationToken = default)
         {
-            var query = this._db.Bike.AsQueryable();
+            // FALTA SANITIZAR A PLACA
+            var query = _db.Bike.AsQueryable();
             if (!string.IsNullOrEmpty(plate))
                 query = query.Where(m => m.Plate == plate);
-            return query.ToList();
+            return await query.ToListAsync(cancellationToken);
         }
 
-        public BikeModel? GetById(string id)
+        public async Task<BikeModel?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
         {
-            return _db.Bike.Find(id);
+            return await _db.Bike.FindAsync(new object[] { id }, cancellationToken);
         }
 
 
@@ -28,7 +29,7 @@ namespace BikeBuster.Services
             var entry = await _db.Bike.AddAsync(moto);
 
             await _db.SaveChangesAsync();
-            var saved = entry.Entity; 
+            var saved = entry.Entity;
             if (_messageBroker != null)
             {
                 await _messageBroker.Publish(new BikeCreatedEvent(
@@ -39,27 +40,24 @@ namespace BikeBuster.Services
                 ));
             }
             return saved;
-
-
-
         }
 
 
-        public bool UpdatePlate(string id, string newPlate)
+        public async Task<bool> UpdatePlateAsync(string id, string newPlate)
         {
-            var moto = this._db.Bike.Find(id);
+            var moto = await _db.Bike.FindAsync(id);
             if (moto == null) return false;
             moto.Plate = newPlate;
-            this._db.SaveChanges();
+            await _db.SaveChangesAsync();
             return true;
         }
 
-        public bool Delete(string id)
+        public async Task<bool> DeleteAsync(string id)
         {
-            var bike = this._db.Bike.Find(id);
+            var bike = await _db.Bike.FindAsync(id);
             if (bike == null) return false;
-            this._db.Bike.Remove(bike);
-            this._db.SaveChanges();
+            _db.Bike.Remove(bike);
+            await _db.SaveChangesAsync();
             return true;
         }
     }
