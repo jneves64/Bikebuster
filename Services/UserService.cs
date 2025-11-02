@@ -19,6 +19,10 @@ namespace BikeBuster.Services
             return saved;
         }
 
+        public async Task<UserModel?> GetByIdAsync(string id)
+        {
+            return await _db.User.FindAsync([id]);
+        }
 
         public async Task<bool> UpdateLicenseImageAsync(string userId, string base64Image, CancellationToken cancellationToken = default)
         {
@@ -26,7 +30,7 @@ namespace BikeBuster.Services
 
             // Valida Base64
             byte[] bytes;
-           
+
             try
             {
                 bytes = Convert.FromBase64String(base64Sanitized);
