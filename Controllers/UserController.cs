@@ -2,6 +2,8 @@
 using BikeBuster.Models;
 using BikeBuster.Services;
 using Microsoft.AspNetCore.Mvc;
+using BikeBuster.Models.DTOs;
+using System.ComponentModel.DataAnnotations;
 
 namespace BikeBuster.Controllers
 {
@@ -17,7 +19,7 @@ namespace BikeBuster.Controllers
         }
         // POST /entregadores
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] UserModel user)
+        public async Task<IActionResult> Create([FromBody][Required] UserModel user)
         {
 
             if (!ModelState.IsValid)
@@ -42,15 +44,11 @@ namespace BikeBuster.Controllers
 
         // PUT /entregadores/{id}/cnh
         [HttpPost("{id}/cnh")]
-        public async Task<IActionResult> UpdateLicense(string id, [FromBody] JsonElement body, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> UpdateLicense([Required] string id, [Required][FromBody] LicenseUploadRequest body)
         {
-            // Extrai imagem do JSON
-            if (!body.TryGetProperty("imagem_cnh", out var imgProp) || string.IsNullOrEmpty(imgProp.GetString()))
-                return BadRequest(new { mensagem = "Imagem vazia" });
-
             try
             {
-                var updated = await _userService.UpdateLicenseImageAsync(id, imgProp.GetString()!, cancellationToken);
+                var updated = await _userService.UpdateLicenseImageAsync(id, body.ImageBase64);
                 if (!updated)
                     return NotFound();
 
