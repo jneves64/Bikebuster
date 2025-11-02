@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BikeBuster.Models
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum DriverLicenseType
     {
         A,
