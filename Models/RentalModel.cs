@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace BikeBuster.Models
@@ -6,28 +7,29 @@ namespace BikeBuster.Models
     public class RentalModel
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [JsonPropertyName("identificador")]
-        public string Id { get; set; }
+        public int Id { get; private set; }
+
 
         [JsonPropertyName("valor_diaria")]
         public decimal DailyRate { get; set; }
 
         [JsonPropertyName("entregador_id")]
-        public string RiderId { get; set; }
+        public string UserId { get; set; }
 
         [JsonPropertyName("moto_id")]
         public string BikeId { get; set; }
 
         [JsonPropertyName("data_inicio")]
-        public DateTime StartDate { get; set; }
+        public DateTime ContractStartDate { get; set; }
 
         [JsonPropertyName("data_termino")]
-        public DateTime EndDate { get; set; }
+        public DateTime? ContractEndDate { get; set; }
 
         [JsonPropertyName("data_previsao_termino")]
-        public DateTime ExpectedEndDate { get; set; }
+        public DateTime ContractExpectedEndDate { get; set; }
 
-        [JsonPropertyName("data_devolucao")]
-        public DateTime? ReturnDate { get; set; }
+        
     }
 }
