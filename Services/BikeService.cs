@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using BikeBuster.Data;
 using BikeBuster.Messaging.Events;
 using BikeBuster.Models;
@@ -9,18 +10,20 @@ namespace BikeBuster.Services
 {
     public class BikeService(DatabaseContext context, IPublishEndpoint publish) : BaseService(context, publish)
     {
-        public async Task<IEnumerable<BikeModel>> GetAllAsync(string? plate, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<BikeModel>> GetAllAsync(string? plate)
         {
-            // FALTA SANITIZAR A PLACA
+            if (!string.IsNullOrWhiteSpace(plate))
+                plate = Regex.Replace(plate.ToUpper(), "[^A-Z0-9]", "");
+
             var query = _db.Bike.AsQueryable();
             if (!string.IsNullOrEmpty(plate))
                 query = query.Where(m => m.Plate == plate);
-            return await query.ToListAsync(cancellationToken);
+            return await query.ToListAsync();
         }
 
-        public async Task<BikeModel?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<BikeModel?> GetByIdAsync(string id)
         {
-            return await _db.Bike.FindAsync(new object[] { id }, cancellationToken);
+            return await _db.Bike.FindAsync([id]);
         }
 
 
@@ -43,11 +46,16 @@ namespace BikeBuster.Services
         }
 
 
-        public async Task<bool> UpdatePlateAsync(string id, string newPlate)
+        public async Task<bool> UpdatePlateAsync(string id, string plate)
         {
+            if (!string.IsNullOrWhiteSpace(plate))
+                plate = Regex.Replace(plate.ToUpper(), "[^A-Z0-9]", "");
+            if (plate.Count() > 7 || plate.Count() < 7)
+                throw new InvalidOperationException("placa inválida, precisa ter 7 digitos");
+
             var moto = await _db.Bike.FindAsync(id);
             if (moto == null) return false;
-            moto.Plate = newPlate;
+            moto.Plate = plate;
             await _db.SaveChangesAsync();
             return true;
         }
