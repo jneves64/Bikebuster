@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using BikeBuster.Models;
+using BikeBuster.Models.DTOs;
 using BikeBuster.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,15 +11,12 @@ namespace BikeBuster.Controllers
     [Route("motos")]
     public class BikeAdminController : ControllerBase
     {
-
         private readonly BikeService _bikeService;
 
         public BikeAdminController(BikeService bikeService)
         {
             _bikeService = bikeService;
         }
-
-        // POST /motos
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] BikeModel bike)
@@ -42,35 +41,32 @@ namespace BikeBuster.Controllers
 
         }
 
-
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] string? placa, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetAll([FromQuery] string? placa)
         {
-            var bikes = await _bikeService.GetAllAsync(placa, cancellationToken);
+            var bikes = await _bikeService.GetAllAsync(placa);
             return Ok(bikes);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetById([Required] string id)
         {
-            var bike = await _bikeService.GetByIdAsync(id, cancellationToken);
+            var bike = await _bikeService.GetByIdAsync(id);
             if (bike == null)
                 return NotFound(); // 404 - esse ID específico não existe
 
             return Ok(bike); // 200 - encontrou a moto
         }
 
-
-        // PUT /motos/{id}/placa
         [HttpPut("{id}/placa")]
-        public async Task<IActionResult> UpdatePlate(string id, [FromBody] string novaPlaca)
+        public async Task<IActionResult> UpdatePlate([Required] string id, [Required][FromBody] PlateUpdateRequest body)
         {
-            if (string.IsNullOrWhiteSpace(novaPlaca))
+            if (string.IsNullOrWhiteSpace(body.NewPlate))
                 return BadRequest("Placa inválida.");
 
             try
             {
-                var ok = await _bikeService.UpdatePlateAsync(id, novaPlaca);
+                var ok = await _bikeService.UpdatePlateAsync(id, body.NewPlate);
                 if (!ok) return NotFound("Moto não encontrada.");
                 return NoContent(); // 204
             }
@@ -84,9 +80,8 @@ namespace BikeBuster.Controllers
             }
         }
 
-        // DELETE /motos/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete([Required] string id)
         {
             var ok = await _bikeService.DeleteAsync(id);
             if (!ok) return NotFound("Moto não encontrada.");
