@@ -30,9 +30,10 @@ namespace BikeBuster.Services
                 throw new InvalidOperationException("Usuário não tem Habilitação tipo A");
 
             if (rent.Id == null)
-                rent.Id = this.RandomIDGenerator(targetUser.Cnpj, targetBike.Plate);
-            
+                rent.Id = RandomIDGenerator(targetUser.Cnpj, targetBike.Plate);
+
             rent.ContractEndDate = null;
+            rent.DailyRate = GetDailyRate(rent.Plan);
             var entry = await _db.Rent.AddAsync(rent);
             await _db.SaveChangesAsync();
             var saved = entry.Entity;
@@ -81,25 +82,35 @@ namespace BikeBuster.Services
             else if (daysUsed > expectedDays)
             {
                 var extraDays = daysUsed - expectedDays;
-                return (expectedDays * rental.DailyRate) + (extraDays * 50);
+                return (expectedDays * dailyRate) + (extraDays * 50m);
             }
             else
             {
-                return expectedDays * rental.DailyRate;
+                return expectedDays * dailyRate;
             }
         }
-        private (decimal dailyRate, decimal penaltyPercent) GetPlan(int days) => days switch
+        private static decimal GetDailyRate(RentalPlan plan) => plan switch
         {
-            7 => (30m, 0.20m),
-            15 => (28m, 0.40m),
-            30 => (22m, 0m),
-            45 => (20m, 0m),
-            50 => (18m, 0m),
-            _ => throw new ArgumentException("Plano inválido")
+            RentalPlan.SevenDays => 30m,
+            RentalPlan.FifteenDays => 28m,
+            RentalPlan.ThirtyDays => 22m,
+            RentalPlan.FortyFiveDays => 20m,
+            RentalPlan.FiftyDays => 18m,
+            _ => throw new InvalidOperationException("Plano inválido")
+        };
+
+        private static decimal GetPenaltyPercent(RentalPlan plan) => plan switch
+        {
+            RentalPlan.SevenDays => 0.20m,
+            RentalPlan.FifteenDays => 0.40m,
+            RentalPlan.ThirtyDays => 0m,
+            RentalPlan.FortyFiveDays => 0m,
+            RentalPlan.FiftyDays => 0m,
+            _ => throw new InvalidOperationException("Plano inválido")
         };
 
 
-        private string RandomIDGenerator(string cnpj, string bikePlate)
+        private static string RandomIDGenerator(string cnpj, string bikePlate)
         {
             string dados = $"{cnpj}{bikePlate}{DateTime.UtcNow.Ticks}";
             int hash = dados.GetHashCode();
