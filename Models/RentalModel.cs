@@ -7,9 +7,8 @@ namespace BikeBuster.Models
     public class RentalModel
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [JsonPropertyName("identificador")]
-        public int Id { get; private set; }
+        public string? Id { get;  set; }
 
 
         [JsonPropertyName("valor_diaria")]
