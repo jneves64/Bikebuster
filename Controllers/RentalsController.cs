@@ -12,8 +12,6 @@ namespace BikeBuster.Controllers
     [ApiController]
     public class RentalsController : ControllerBase
     {
-
-
         private readonly RentalService _rentalService;
 
         public RentalsController(RentalService rentalService)
@@ -69,6 +67,7 @@ namespace BikeBuster.Controllers
                     data_inicio = rental.ContractStartDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
                     data_devolucao = rental.ContractEndDate?.ToString("yyyy-MM-ddTHH:mm:ssZ"),
                     data_prevista = rental.ContractExpectedEndDate.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                    valor_diaria = rental.DailyRate,
                     valor_total = total,
                     aluguel_id = rental.Id,
                 });
