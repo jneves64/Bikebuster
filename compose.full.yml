@@ -1,0 +1,49 @@
+version: "3.9"
+name: bikebuster-full
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: bikebuster_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d bikebuster_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 60s  # Aumentado para 60s porque o RabbitMQ demora ~40s para inicializar
+
+  bikebuster:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__Postgres: "Host=db;Database=bikebuster_db;Username=admin;Password=1234"
+      RabbitMq__Host: "rabbitmq"
+      RabbitMq__Username: "guest"
+      RabbitMq__Password: "guest"
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8080"  # Garantir que o app escuta na porta correta
+    ports:
+      - "5237:8080"

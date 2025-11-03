@@ -11,16 +11,32 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configuração do PostgreSQL
+// Usa ConnectionStrings__Postgres do docker-compose ou DefaultConnection do appsettings.json
+var connectionString = builder.Configuration.GetConnectionString("Postgres") 
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<DatabaseContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
-
+// Configuração do MassTransit com RabbitMQ
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<BikeCreatedConsumer>();
+    
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("rabbitmq://localhost");
+        // Lê as configurações do RabbitMQ das variáveis de ambiente ou appsettings.json
+        var rabbitHost = builder.Configuration["RabbitMq:Host"] ?? "localhost";
+        var rabbitUser = builder.Configuration["RabbitMq:Username"] ?? "guest";
+        var rabbitPass = builder.Configuration["RabbitMq:Password"] ?? "guest";
+        
+        cfg.Host(rabbitHost, "/", h =>
+        {
+            h.Username(rabbitUser);
+            h.Password(rabbitPass);
+        });
+        
         cfg.ConfigureEndpoints(context);
     });
 });
