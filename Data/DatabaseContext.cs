@@ -17,15 +17,12 @@ namespace BikeBuster.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder); // ✅ Importante chamar o base
-
+            base.OnModelCreating(modelBuilder); 
             // Configuração do enum como string
             modelBuilder.Entity<UserModel>()
                 .Property(u => u.DriverLicenseType)
                 .HasConversion<string>();
 
-            // Aqui você pode adicionar outras configurações
-            // Exemplo: índices, chaves compostas, relacionamentos, etc.
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
