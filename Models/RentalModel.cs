@@ -4,12 +4,23 @@ using System.Text.Json.Serialization;
 
 namespace BikeBuster.Models
 {
+    public enum RentalPlan
+    {
+        SevenDays = 7,
+        FifteenDays = 15,
+        ThirtyDays = 30,
+        FortyFiveDays = 45,
+        FiftyDays = 50
+    }
+
     public class RentalModel
     {
         [Key]
         [JsonPropertyName("identificador")]
-        public string? Id { get;  set; }
+        public string? Id { get; set; }
 
+        [JsonPropertyName("plano")]
+        public RentalPlan Plan { get; set; }
 
         [JsonPropertyName("valor_diaria")]
         public decimal DailyRate { get; set; }
@@ -29,6 +40,6 @@ namespace BikeBuster.Models
         [JsonPropertyName("data_previsao_termino")]
         public DateTime ContractExpectedEndDate { get; set; }
 
-        
+
     }
 }
