@@ -34,6 +34,7 @@ namespace BikeBuster.Services
 
             rent.ContractEndDate = null;
             rent.DailyRate = GetDailyRate(rent.Plan);
+            rent.ContractExpectedEndDate = rent.ContractStartDate.AddDays((int)rent.Plan);  // the rental period start on the next day, I think, so 1 + 7 days
             var entry = await _db.Rent.AddAsync(rent);
             await _db.SaveChangesAsync();
             var saved = entry.Entity;
@@ -68,16 +69,19 @@ namespace BikeBuster.Services
 
         public decimal CalculateTotal(RentalModel rental, DateTime returnDate)
         {
-            var daysUsed = (returnDate - rental.ContractStartDate).Days;
-            var expectedDays = (rental.ContractExpectedEndDate - rental.ContractStartDate).Days;
+            var dailyRate = GetDailyRate(rental.Plan);
+            var penaltyPercent = GetPenaltyPercent(rental.Plan);
+
+            var daysUsed = (returnDate.Date - rental.ContractStartDate.Date).Days ;
+            var expectedDays = (int)rental.Plan;
 
             if (daysUsed < expectedDays)
             {
-                var (_, penaltyPercent) = GetPlan(expectedDays);
                 var unusedDays = expectedDays - daysUsed;
-                var unusedValue = unusedDays * rental.DailyRate;
+                var unusedValue = unusedDays * dailyRate;
                 var penalty = unusedValue * penaltyPercent;
-                return (daysUsed * rental.DailyRate) + penalty;
+
+                return (daysUsed * dailyRate) + penalty;
             }
             else if (daysUsed > expectedDays)
             {
@@ -112,8 +116,8 @@ namespace BikeBuster.Services
 
         private static string RandomIDGenerator(string cnpj, string bikePlate)
         {
-            string dados = $"{cnpj}{bikePlate}{DateTime.UtcNow.Ticks}";
-            int hash = dados.GetHashCode();
+            string salt = $"{cnpj}{bikePlate}{DateTime.UtcNow.Ticks}";
+            int hash = salt.GetHashCode();
 
             string guidPart = Guid.NewGuid().ToString("N").Substring(0, 2);
 
