@@ -18,12 +18,12 @@ namespace BikeBuster.Models
     {
         [Key]
         [JsonPropertyName("identificador")]
-        public string Id { get; set; }
+        public required string Id { get; set; }
 
         [JsonPropertyName("nome")]
         [Required]
         [StringLength(200)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [JsonPropertyName("data_nascimento")]
         [Required]
@@ -35,16 +35,16 @@ namespace BikeBuster.Models
 
         [Required]
         [JsonPropertyName("imagem_cnh")]
-        public string DriverLicenseImage { get; set; }
+        public required string DriverLicenseImage { get; set; }
 
         [JsonPropertyName("numero_cnh")]
         [Required]
         [StringLength(11, MinimumLength = 11)]
-        public string DriverLicenseNumber { get; set; }
+        public required string DriverLicenseNumber { get; set; }
 
         [JsonPropertyName("cnpj")]
         [Required]
         [StringLength(14, MinimumLength = 14)]
-        public string Cnpj { get; set; }
+        public required string Cnpj { get; set; }
     }
 }

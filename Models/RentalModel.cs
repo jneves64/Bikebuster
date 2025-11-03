@@ -26,10 +26,10 @@ namespace BikeBuster.Models
         public decimal DailyRate { get; set; }
 
         [JsonPropertyName("entregador_id")]
-        public string UserId { get; set; }
+        public required string UserId { get; set; }
 
         [JsonPropertyName("moto_id")]
-        public string BikeId { get; set; }
+        public required string BikeId { get; set; }
 
         [JsonPropertyName("data_inicio")]
         public DateTime ContractStartDate { get; set; }

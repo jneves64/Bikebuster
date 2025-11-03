@@ -12,7 +12,7 @@ namespace BikeBuster.Models
         [Key]
         [JsonPropertyName("identificador")]
         [Required]
-        public string Id { get; set; }
+        public required string Id { get; set; }
 
         [JsonPropertyName("ano")]
         [Required]
@@ -21,7 +21,7 @@ namespace BikeBuster.Models
 
         [JsonPropertyName("modelo")]
         [Required]
-        public string Model { get; set; }
+        public required string Model { get; set; }
 
         [JsonPropertyName("placa")]
         [Required]

@@ -11,7 +11,7 @@ namespace BikeBuster.Models
         public int Id { get; set; }
 
         [Required]
-        public string BikeId { get; set; }
+        public required string BikeId { get; set; }
 
         [Required]
         public DateTime ReceivedAt { get; set; } = DateTime.UtcNow;
