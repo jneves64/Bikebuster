@@ -18,17 +18,21 @@ namespace BikeBuster.Services
             var targetBike = await _bikeService.GetByIdAsync(rent.BikeId);
             var alreadyRented = await this.IsBikeRentedAsync(rent.BikeId);
 
+
             if (targetUser == null)
                 throw new InvalidOperationException("Usuário não encontrado");
             if (targetBike == null)
-                throw new InvalidOperationException("Usuário não encontrado");
+                throw new InvalidOperationException("Moto não encontrada");
             if (alreadyRented)
                 throw new InvalidOperationException("Moto já está alugada");
-            if (targetUser.DriverLicenseType != DriverLicenseType.A || targetUser.DriverLicenseType != DriverLicenseType.AB)
+
+            if (targetUser.DriverLicenseType != DriverLicenseType.A && targetUser.DriverLicenseType != DriverLicenseType.AB)
                 throw new InvalidOperationException("Usuário não tem Habilitação tipo A");
 
+            if (rent.Id == null)
+                rent.Id = this.RandomIDGenerator(targetUser.Cnpj, targetBike.Plate);
+            
             rent.ContractEndDate = null;
-
             var entry = await _db.Rent.AddAsync(rent);
             await _db.SaveChangesAsync();
             var saved = entry.Entity;
@@ -94,5 +98,15 @@ namespace BikeBuster.Services
             _ => throw new ArgumentException("Plano inválido")
         };
 
+
+        private string RandomIDGenerator(string cnpj, string bikePlate)
+        {
+            string dados = $"{cnpj}{bikePlate}{DateTime.UtcNow.Ticks}";
+            int hash = dados.GetHashCode();
+
+            string guidPart = Guid.NewGuid().ToString("N").Substring(0, 2);
+
+            return $"{Math.Abs(hash):X4}{guidPart}".ToUpper();
+        }
     }
 }
