@@ -1,4 +1,4 @@
-# Guia rápido para rodar o projeto BikeBuster
+# Guia rápido para rodar o BikeBuster
 
 ## 1. Restaurar dependências
 No diretório do projeto:
