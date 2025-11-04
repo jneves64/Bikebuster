@@ -8,8 +8,9 @@ using Npgsql;
 
 namespace BikeBuster.Services
 {
-    public class BikeService(DatabaseContext context, IPublishEndpoint publish) : BaseService(context, publish)
+    public class BikeService(DatabaseContext context, IPublishEndpoint publish, RentalService rentalService) : BaseService(context, publish)
     {
+        private readonly RentalService _rentalService = rentalService;
         public async Task<IEnumerable<BikeModel>> GetAllAsync(string? plate)
         {
             if (!string.IsNullOrWhiteSpace(plate))
@@ -64,6 +65,9 @@ namespace BikeBuster.Services
         {
             var bike = await _db.Bike.FindAsync(id);
             if (bike == null) return false;
+            var isRented =  await this._rentalService.IsBikeRentedAsync(bike.Id);
+            if (isRented)
+                throw new InvalidOperationException("Moto alugada, não pode ser deletada");
             _db.Bike.Remove(bike);
             await _db.SaveChangesAsync();
             return true;
